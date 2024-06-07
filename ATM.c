@@ -230,8 +230,9 @@ int get_next_interface(){
 
             case 7:
                 printf("HA SALIDO EXITOSAMENTE DEL CAJERO.\n");
+                getch();
                 clearScreen();
-                break;
+                return 0;
 
             default:
                 clearScreen();
