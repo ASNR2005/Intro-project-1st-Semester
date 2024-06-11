@@ -66,10 +66,15 @@ int main(){
 
     // remainder: make this in order for the user to register, or log in without hard coding the username not the password
     char givenUserName[50], givenPassword[50];
-    char userName[] = "aryan";
-    char userPassWord [] = "user@34"; //alphanumeric password
+
+    char userName[50];
+    char userPassWord [50]; //alphanumeric password
+    
     float balance = 0.0;
     int userAttemptsToLog = 3;
+
+
+    register_user(userName, userPassWord);
 
     do
     {

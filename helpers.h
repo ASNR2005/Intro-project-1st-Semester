@@ -26,6 +26,24 @@ const char *match_mobile_operator(char phoneNumber[])
     return mobilePhone;
 }
 
+bool is_valid_password(char passwordInRegistration[]){
+    bool hasLetter = false;
+    bool hasNumber = false;
+
+    for(int i = 0; i < strlen(passwordInRegistration); i++){
+        if(isalpha(passwordInRegistration[i])){
+            hasLetter = true;
+        }
+
+        if (isdigit(passwordInRegistration[i])){
+            hasNumber = true;
+        }
+        
+    }
+
+    return hasLetter && hasNumber;
+}
+
 bool is_a_valid_floating_point_value(int valueReturnedByScanf){
     if (valueReturnedByScanf == 1)
         return true;
@@ -70,6 +88,24 @@ bool is_not_equal(char userInputtedStr[], char declaredStr[])
 // pass the not helpers functions to the ATM.C
 
 // principal menu fuctions
+
+int register_user(char userName[], char password[]){
+    do{
+        clearScreen();
+        printf("Igrese su nombre de usuario: ");
+        scanf(" %50[^\n]s", userName);
+        printf("Ingrese su contrasenia (alpha numerica): ");
+        scanf(" %50[^\n]s", password);
+
+        if (!is_valid_password(password)){
+            printf("La contrasenia debe de tener letras y numeros, debe de ser alpha numerica.\n");
+            getch();
+            continue;
+        }
+        
+    }while(!is_valid_password(password));
+    getch();
+}
 
 int set_account_configuration(char givenUsername[], char givenPassword[]){
     clearScreen();
@@ -262,18 +298,16 @@ int show_balance(float balance)
 int introduce_team()
 {
     clearScreen();
-    printf("Proyecto de introduccion a ing. en computacion.\n");
+    printf("Proyecto Cajero UNI.\n");
+    printf("Universidad Nacional De ingenieria.\n");
     printf("area de estudio: DATIC\n");
 
-    printf("\t\tKenry Onell Lira Zavala\n"
-           "\t\tCristhian Adonis Sevilla Diaz\n"
-           "\t\tAryan Sidar Narvaez Rivera\n");
+    printf("\t\tKenry Onell Lira Zavala \t\t2024-1898U\n"
+           "\t\tCristhian Adonis Sevilla Diaz \t\t2024-1926U\n"
+           "\t\tAryan Sidar Narvaez Rivera \t\t2024-1896U\n");
 
-    printf("\t\t2024-1898U\n"
-           "\t\t2024-1926U\n"
-           "\t\t2024-1896U\n");
 
-    printf("\t\tDocente: Ing.Nelson Barrios.\n");
+    printf("\n\t\tDocente: Ing.Nelson Barrios.\n");
 
     getch();
 
