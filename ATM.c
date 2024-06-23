@@ -7,9 +7,13 @@ float get_next_interface(float balance, char userName[], char password[]){
     int givenNumberByUser = 0;
     char mobileNumber[8];
     do{
+
+        // reminder: move the 2nd option to 6th into its own ATM menu
+        
         clearScreen();
         printf("1.Presentacion.\n"
                 "2.Ver saldo.\n"
+                "3.ATM menu."
                 "3.Depositar.\n"
                 "4.Retirar.\n"
                 "5.Recargar.\n"
@@ -17,20 +21,20 @@ float get_next_interface(float balance, char userName[], char password[]){
                 "7.Salir.\n"
                 "Inserte opcion deseada: ");
 
-        scanf(" %d", &givenNumberByUser); 
+        scanf("%d", &givenNumberByUser); 
 
         switch (givenNumberByUser)
         {
             case 1:
                 introduce_team();
-                return balance;
+                return balance; 
 
             case 2:
                 show_balance(balance);
                 return balance;
 
             case 3:
-                balance += make_a_deposit(balance);
+                balance += make_a_deposit();
                 return balance; 
 
             case 4:
@@ -49,7 +53,7 @@ float get_next_interface(float balance, char userName[], char password[]){
                 clearScreen();
                 printf("HA SALIDO EXITOSAMENTE DEL CAJERO.\n");
                 getch();
-                return balance;
+                exit(0);
 
             default:
                 clearScreen();
@@ -63,19 +67,20 @@ float get_next_interface(float balance, char userName[], char password[]){
 }
 
 int main(){
-
-    // remainder: make this in order for the user to register, or log in without hard coding the username not the password
-    char givenUserName[50], givenPassword[50];
-
-    char userName[50];
-    char userPassWord [50]; //alphanumeric password
+    // registration variables
+    char userName[30];  
+    char userPassWord [30]; 
+    char confirmationPassword[30];
     
+    char givenUserName[30], givenPassword[30]; // log in variables
+
     float balance = 0.0;
     int userAttemptsToLog = 3;
 
 
-    register_user(userName, userPassWord);
+    register_user(userName, userPassWord, confirmationPassword); 
 
+    // reminder: refactor the log in functionality into its own separate function 
     do
     {
         fflush(stdin); // clean buffer for input 

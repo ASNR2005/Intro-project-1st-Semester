@@ -84,27 +84,87 @@ bool is_not_equal(char userInputtedStr[], char declaredStr[])
     return false;
 }
 
+int get_masked_password(char userPassword[]){
+
+    int index = 0;
+    char userChar;
+
+    while ((userChar = getch()) != '\r' && index < 30)
+    {
+        if (index > 0)
+        {
+            if (userChar == '\b' || userChar == -32)
+            {
+                putchar('\b'); // Move cursor back
+                putchar(' ');  // Overwrite the character with a space
+                putchar('\b'); // Move cursor back again
+                index--;
+                continue;
+            }
+            putchar('*');
+            userPassword[index] = userChar;
+            index++;
+        }
+
+        else
+        {
+            if (userChar == '\b' || userChar == -32) // -32 is the spr key
+                continue;
+
+            putchar('*');
+            userPassword[index] = userChar;
+            index++;
+        }
+    }
+    userPassword[index] = '\0';
+
+    return 0;
+}
 
 // pass the not helpers functions to the ATM.C
 
 // principal menu fuctions
+float get_ATM_menu(float balance){
+    float totalMoneyGottenByMovement = 0.0F;
 
-int register_user(char userName[], char password[]){
+
+    return totalMoneyGottenByMovement;
+}
+
+
+int register_user(char userName[], char password[], char confirmationPassword []){
+    bool isNotMatch;
+    clearScreen();
+    printf("Pantalla de Registro.\n");
+    printf("Igrese su nombre de usuario: ");
+    scanf(" %50[^\n]s", userName);
+
     do{
+        isNotMatch = false;
         clearScreen();
-        printf("Igrese su nombre de usuario: ");
-        scanf(" %50[^\n]s", userName);
         printf("Ingrese su contrasenia (alpha numerica): ");
-        scanf(" %50[^\n]s", password);
+        get_masked_password(password);
 
         if (!is_valid_password(password)){
-            printf("La contrasenia debe de tener letras y numeros, debe de ser alpha numerica.\n");
+            printf("\nLa contrasenia debe de tener letras y numeros, debe de ser alpha numerica.\n");
             getch();
             continue;
         }
-        
-    }while(!is_valid_password(password));
-    getch();
+
+        printf("\nIngrese confirmacion de contrasenia: ");
+        get_masked_password(confirmationPassword);
+         
+        if (is_not_equal(password,confirmationPassword))
+        {
+            printf("\nLas contrasenias no coinciden.\n");
+            getch();
+            isNotMatch = true;
+            continue;
+        }
+
+    
+    }while(!is_valid_password(password) || isNotMatch);
+    return 0; 
 }
 
 int set_account_configuration(char givenUsername[], char givenPassword[]){
@@ -241,7 +301,7 @@ float withdraw_money(float balance)
     return amountToWithdraw;
 }
 
-float make_a_deposit(float balance)
+float make_a_deposit()
 {
     int returnedValue = 0;
     float deposit = 0.0;
