@@ -75,37 +75,13 @@ int main(){
     char givenUserName[30], givenPassword[30]; // log in variables
 
     float balance = 0.0;
-    int userAttemptsToLog = 3;
 
 
-    register_user(userName, userPassWord, confirmationPassword); 
-
-    // reminder: refactor the log in functionality into its own separate function 
-    do
-    {
-        fflush(stdin); // clean buffer for input 
-        clearScreen();
-        printf("Ingrese su usruario: ");
-        scanf( " %50[^\n]s", givenUserName);
-        printf("Insert su contraseña: ");
-        scanf( " %50[^\n]s", givenPassword);
-
-        
-        // validate username and password
-        if ( is_not_equal(givenPassword, userPassWord) || is_not_equal(givenUserName, userName) ){
-            clearScreen();
-            printf("Ha puesto el nombre de usuario o la contrasenia erronea.\nIntendos restantes %d\n", userAttemptsToLog - 1);
-            getch();
-            userAttemptsToLog--; 
-        }
-        
-        else 
+    if(!register_user(userName, userPassWord, confirmationPassword)){
+        if (!login_user(givenUserName, givenPassword,userName,userPassWord))
             balance = get_next_interface(balance, userName, userPassWord);
-
-
-    } while (userAttemptsToLog != 0);
-    
+    } 
+   
     getch();
-
     return 0;
 }

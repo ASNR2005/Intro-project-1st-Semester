@@ -90,7 +90,7 @@ int get_masked_password(char userPassword[]){
     char userChar;
 
     while ((userChar = getch()) != '\r' && index < 30)
-    {
+    {       
         if (index > 0)
         {
             if (userChar == '\b' || userChar == -32)
@@ -101,19 +101,24 @@ int get_masked_password(char userPassword[]){
                 index--;
                 continue;
             }
-            putchar('*');
-            userPassword[index] = userChar;
-            index++;
+            else if (isalnum(userChar))
+            {
+                putchar('*');
+                userPassword[index] = userChar;
+                index++;
+            }
         }
 
         else
         {
             if (userChar == '\b' || userChar == -32) // -32 is the spr key
                 continue;
+            else if (isalnum(userChar)){
+                putchar('*');
+                userPassword[index] = userChar;
+                index++;
+            }
 
-            putchar('*');
-            userPassword[index] = userChar;
-            index++;
         }
     }
     userPassword[index] = '\0';
@@ -131,6 +136,33 @@ float get_ATM_menu(float balance){
     return totalMoneyGottenByMovement;
 }
 
+int login_user(char givenUsername[], char givenPassword[], char userName[], char password[]){
+
+    int userAttemptsToLog = 3;
+    do
+    {
+        fflush(stdin); // clean buffer for input
+        clearScreen();
+        printf("Ingrese su usuario: ");
+        scanf(" %50[^\n]s", givenUsername);
+        printf("Insert su contraseña: ");
+        get_masked_password(givenPassword);
+
+        // validate username and password
+        if (is_not_equal(givenPassword, password) || is_not_equal(givenUsername, userName))
+        {
+            clearScreen();
+            printf("Ha puesto el nombre de usuario o la contrasenia erronea.\nIntentos restantes %d\n", userAttemptsToLog - 1);
+            getch();
+            userAttemptsToLog--;
+        }
+
+        else
+            return EXIT_SUCCESS;
+
+    } while (userAttemptsToLog != 0);
+    return EXIT_FAILURE;
+}
 
 int register_user(char userName[], char password[], char confirmationPassword []){
     bool isNotMatch;
