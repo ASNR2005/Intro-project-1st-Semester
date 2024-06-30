@@ -17,40 +17,56 @@ void clearScreen()
     system("cls");
 }
 
-const char *match_mobile_operator(char phoneNumber[])
+bool is_tigo(char const phoneNumber[static 8])
 {
-    char *mobilePhone;
-    for (int i = 0; i < strlen(phoneNumber); i++)
+    int const startOfPrefixes[] = {7710, 7750, 7870, 8150, 8260, 8320, 8370, 8450, 8550, 8590, 8670, 8750, 8800, 8860, 8950, 8990};
+    int const endOfPrefixes[] = {7719, 7769, 7879, 8159, 8269, 8329, 8399, 8489, 8559, 8599, 8689, 8779, 8819, 8899, 8979, 8999};
+
+    // Extract the first four digits as a substring and convert to integer
+    char const str[] = {phoneNumber[0], phoneNumber[1], phoneNumber[2], phoneNumber[3]};
+    int const firstFourDigits = atoi(str);
+
+    // Check if the first four digits are within any of the ranges
+    for (int i = 0; i < 16; i++)
     {
-        if (phoneNumber[i] == '7' && phoneNumber[i + 1] == '6')
+        if (firstFourDigits >= startOfPrefixes[i] && firstFourDigits <= endOfPrefixes[i])
         {
-            mobilePhone = "tigo";
-            return mobilePhone;
+            return true;
         }
     }
-    mobilePhone = "claro";
-
-    return mobilePhone;
+    return false;
 }
 
-bool is_tigo(){
-    return true;
+bool is_claro(char const phoneNumber[static 8])
+{
+    int const startOfPrefixes[] = {5740, 5780, 5800, 8330, 8350, 8400, 8490, 8500, 8600, 8690, 8700, 8820, 8900};
+    int const endOfPrefixes[] = {5749, 5789, 5809, 8339, 8369, 8449, 8499, 8549, 8669, 8699, 8749, 8959, 8949};
+
+    // Extract the first four digits as a substring and convert to integer
+    char const str[] = {phoneNumber[0], phoneNumber[1], phoneNumber[2], phoneNumber[3]};
+    int const firstFourDigits = atoi(str);
+
+    // Check if the first four digits are within any of the ranges
+    for (int i = 0; i < 13; i++)
+    {
+        if (firstFourDigits >= startOfPrefixes[i] && firstFourDigits <= endOfPrefixes[i])
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
-bool is_claro(){
-    return true;
-}
-
-bool is_valid_password(char passwordInRegistration[]){
+bool is_valid_password(char const password[]){
     bool hasLetter = false;
     bool hasNumber = false;
 
-    for(int i = 0; i < strlen(passwordInRegistration); i++){
-        if(isalpha(passwordInRegistration[i])){
+    for(int i = 0; i < strlen(password); i++){
+        if(isalpha(password[i])){
             hasLetter = true;
         }
 
-        if (isdigit(passwordInRegistration[i])){
+        if (isdigit(password[i])){
             hasNumber = true;
         }
         
@@ -70,14 +86,20 @@ bool is_phone_number_valid(char phoneNumber[])
 {
 
     if (strlen(phoneNumber) < 8 || strlen(phoneNumber) > 8)
+    {
         return false;
+    }
 
     for (int i = 0; i < strlen(phoneNumber); i++)
     {
         if (isdigit(phoneNumber[i]))
+        {
             continue;
+        }
         else
+        {
             return false;
+        }
     }
 
     return true;
@@ -138,9 +160,42 @@ int get_masked_password(char userPassword[]){
     return EXIT_SUCCESS;
 }
 
-// pass the not helpers functions to the ATM.C
+int authenticate_user(char * username, char *password){
+    char usernameToVerify[30];
+    char passwordToVerify[30];
+
+    int attemptsToVerifyUser = 3;
+    do
+    {
+
+        clearScreen();
+        printf("Ingrese su antiguo usuario: ");
+        scanf(" %30[^\n]s", usernameToVerify);
+        clearInputBuffer();
+
+        printf("Insert su antigua contrasenia: ");
+        get_masked_password(passwordToVerify);
+
+        // validate username and password
+        if (is_not_equal(passwordToVerify, password) || is_not_equal(usernameToVerify, username))
+        {
+            clearScreen();
+            printf("El usuario o la contrasenia no coinciden.\n"
+                   "Intentos restantes %d\n",
+                   attemptsToVerifyUser - 1);
+            getch();
+            attemptsToVerifyUser--;
+        }
+
+        else
+            return EXIT_SUCCESS;
+
+    } while (attemptsToVerifyUser != 0);
+    return EXIT_FAILURE;
+}
 
 // principal menu fuctions
+    
 int login_user(char userName[], char password[]){
 
     char givenUsername[30];
@@ -218,17 +273,45 @@ int register_user(char userName[], char password[]){
 
 int set_account_configuration(char username[], char password[]){
     clearScreen();
+
+    printf("Verificacion de usuario\n");
+    getch();
+
+    if(authenticate_user(username, password)){
+        return EXIT_FAILURE;
+    }
+    
+    clearScreen();
     printf("Inserte nuevo nombre de usuario: ");
     scanf(" %30[^\n]s", username);
     clearInputBuffer();
 
-    printf("Inserte la nueva contrasenia: ");
-    get_masked_password(password);
-    return EXIT_SUCCESS;
+    do
+    {
+        clearScreen();
+        printf("Inserte la nueva contrasenia: ");
+        get_masked_password(password);
+
+        if (is_valid_password(password))
+        {
+            clearScreen();
+            printf("El usuario y la contrasenia han sido cambiados con exito.\n");
+            getch();
+            return EXIT_SUCCESS;
+        }
+        else
+        {
+            clearScreen();
+            printf("La contrasenia debe de ser alpha numerica.");
+            getch();
+            continue;
+        }
+    } while (!is_valid_password(password));
 }
 
 float charge_prepaid_mobile(float balance)
 {
+    bool isInvalidOperator = false;
     char mobileNumber[8];
     const char *mobileOperator;
     int returnedValue = 0; 
@@ -253,12 +336,29 @@ float charge_prepaid_mobile(float balance)
 
         if (is_phone_number_valid(mobileNumber))
         {
-            mobileOperator = match_mobile_operator(mobileNumber);
-            printf("%s\n", mobileOperator);
+            if (is_tigo(mobileNumber))
+            {
+                mobileOperator = "Tigo";
+            }
+
+            else if (is_claro(mobileNumber))
+            {
+                mobileOperator = "Claro";
+            }
+
+            else
+            {
+                printf("El numero %s no es un operador movil valido.\n", mobileNumber);
+                isInvalidOperator = true;
+                getch();
+                continue;
+            }
+            
+            printf("Su operador telefonico es: %s\n", mobileOperator);
             getch();
         }
 
-    } while (!is_phone_number_valid(mobileNumber));
+    } while (!is_phone_number_valid(mobileNumber) || isInvalidOperator); 
 
     while (amountToCharge <= 0 || amountToCharge > balance)
     {
@@ -430,10 +530,6 @@ int introduce_team()
     axis.Y += 2;
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), axis);
     printf("Kenry Onell Lira Zavala \t\t2024-1898U");
-
-    axis.Y++;
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), axis);
-    printf("Cristhian Adonis Sevilla Diaz \t2024-1926U");
 
     axis.Y++;
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), axis);
