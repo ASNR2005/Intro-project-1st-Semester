@@ -7,7 +7,8 @@ void get_ATM_menu(float *, char *, char *);
 
 int main(){
 
-    char userName[30];  
+    bool hasSucceedToLogIn = true;
+    char userName[30];
     char userPassWord [30];
 
     float balance = 0.0;
@@ -22,6 +23,14 @@ int main(){
             if (!login_user(userName,userPassWord))
             {
                 valueReturned = get_first_menu(&balance, userName, userPassWord);
+            }
+            else
+            {
+                clearScreen();
+                hasSucceedToLogIn = false;
+                printf("No ha sido capaz de iniciar sesion.\n");
+                getch();
+                exit(0); // program succeeded, but user was not capable of logging in.
             }
         } while (valueReturned == rePromptLoginCode || valueReturned == EXIT_FAILURE);
         
@@ -114,7 +123,12 @@ void get_ATM_menu(float *balance, char *username, char *userPassword)
             break;
 
         case 5:
-            set_account_configuration(username, userPassword);
+            if(set_account_configuration(username, userPassword) == EXIT_FAILURE){
+                clearScreen();
+                printf("Error al intentar verificar el usuario.\n");
+                getch();
+                exit(0);
+            }
             break;
 
         default:
@@ -129,8 +143,8 @@ void get_ATM_menu(float *balance, char *username, char *userPassword)
         do
         {
             clearScreen();
-            printf("Desea hacer otro movimiento?\n"
-                "S(si) / N(no): ");
+            printf( "Desea hacer otro movimiento?\n"
+                    "S(si) / N(no): ");
             scanf(" %c", &moveOpc);
             clearInputBuffer();
 
