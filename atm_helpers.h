@@ -351,6 +351,7 @@ float charge_prepaid_mobile(float balance)
 
     do
     {
+        isInvalidOperator = false;
         clearScreen();
         printf("Inserte el numero telefonico: ");
         scanf(" %8[^\n]s", mobileNumber);
@@ -378,6 +379,14 @@ float charge_prepaid_mobile(float balance)
             
             printf("Su operador telefonico es: %s\n", mobileOperator);
             getch();
+        }
+
+        else
+        {
+            clearScreen();
+            printf("Numero telefonico no valido.\n");
+            getch();
+            continue;
         }
 
     } while (!is_phone_number_valid(mobileNumber) || isInvalidOperator); 
