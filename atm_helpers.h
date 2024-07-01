@@ -451,6 +451,14 @@ float withdraw_money(float balance)
             continue;
         }
 
+        if (amountToWithdraw > 10000)
+        {
+            clearScreen();
+            printf("El retiro debe de ser menor a C$10,000\n");
+            getch();
+            clearScreen();
+            continue;
+        }
 
         if (amountToWithdraw < 1)
         {
