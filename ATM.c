@@ -1,12 +1,13 @@
-#include "helpers.h"
+#include "atm_helpers.h"
 #include <stdio.h>
 
+// Function prototypes
 int get_first_menu(float *, char *, char *);
 
 void get_ATM_menu(float *, char *, char *);
 
 int main(){
-
+    // Variable declarations
     bool hasSucceedToLogIn = true;
     char userName[30];
     char userPassWord [30];
@@ -14,12 +15,12 @@ int main(){
     float balance = 0.0;
     int const rePromptLoginCode = 10;
 
-
-
+    // Check if user registration is successful
     if(!register_user(userName, userPassWord)){
         int valueReturned;
         do
         {
+            // Check if user login is successful
             if (!login_user(userName,userPassWord))
             {
                 valueReturned = get_first_menu(&balance, userName, userPassWord);
@@ -39,7 +40,7 @@ int main(){
     return 0;
 }
 
-
+// Function to display the first menu
 int get_first_menu(float *balance, char * username, char * userPassword){
     int givenNumberByUser = 0;
     int const backToLoginCode = 10;
@@ -47,6 +48,7 @@ int get_first_menu(float *balance, char * username, char * userPassword){
     do
     {
         clearScreen();
+        // Display menu options
         printf("1.Presentacion.\n"
                "2.ATM menu.\n"
                "3.Salir.\n"
@@ -83,6 +85,7 @@ int get_first_menu(float *balance, char * username, char * userPassword){
     return EXIT_SUCCESS;
 }
 
+// Function to display the ATM menu
 void get_ATM_menu(float *balance, char *username, char *userPassword)
 {
     char moveOpc = ' ';
@@ -123,6 +126,7 @@ void get_ATM_menu(float *balance, char *username, char *userPassword)
             break;
 
         case 5:
+            // check id account setting was unsuccessful
             if(set_account_configuration(username, userPassword) == EXIT_FAILURE){
                 clearScreen();
                 printf("Error al intentar verificar el usuario.\n");
@@ -143,6 +147,7 @@ void get_ATM_menu(float *balance, char *username, char *userPassword)
         do
         {
             clearScreen();
+            // Prompt user for another transaction
             printf( "Desea hacer otro movimiento?\n"
                     "S(si) / N(no): ");
             scanf(" %c", &moveOpc);
